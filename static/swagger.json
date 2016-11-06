@@ -1,0 +1,86 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Document Storage API",
+    "description": "Document storage. By SBERNED Statistics Team",
+    "version": "0.1.0"
+  },
+  "host": "127.0.0.1:11300",
+  "tags": [
+    {
+      "name": "System",
+      "description": "System operations"
+    },
+    {
+      "name": "Storage",
+      "description": "Storage operations"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json",
+    "application/x-msgpack"
+  ],
+  "paths": {
+    "/version/": {
+      "get": {
+        "summary": "Shows Mangus API version",
+        "tags": [
+          "System"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "default": {
+            "description": "Version unavailable"
+          }
+        }
+      }
+    },
+    "/ping/": {
+      "get": {
+        "summary": "System healthcheck",
+        "description": "Performs requests to database and Mango API.",
+        "tags": [
+          "System"
+        ],
+        "responses": {
+          "200": {
+            "description": "System function ok"
+          },
+          "503": {
+            "description": "Database or Mango API is down",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "$ref": "#/definitions/Error"
+                },
+                "result": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Healthcheck unavailable"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Error": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

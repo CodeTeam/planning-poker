@@ -1,0 +1,49 @@
+version: "2"
+services:
+    api:
+        build: .
+        ports:
+            - "22300:8000"
+            - "22301:8001"
+        links:
+            - pg
+        volumes: 
+            - .:/usr/src/app
+        command: python -m http.server 8000
+        depends_on: 
+            - pg
+            - tarantool
+        environment:
+            - DATABASE_URL=postgresql://user:dbpass@pg/tornado_starter
+            - DEBUG=True
+    pg:
+        image: postgres
+        expose:
+            - "5432"
+        environment:
+            - POSTGRES_PASSWORD=dbpass
+            - POSTGRES_USER=user
+            - POSTGRES_DB=tornado_starter
+    tarantool:
+        expose:
+            - "3301"
+        image: tarantool/tarantool
+        command: |
+            /bin/sh -c '/bin/sh -s <<EOF
+            cat > /opt/tarantool/app.lua <<EON
+                box.cfg{}
+                s = box.schema.space.create("main")
+                s:create_index("px", {
+                    parts = {1, "STR"},
+                    unique = true,
+                    type = "TREE"
+                })
+                s:truncate()
+                function tnt_rest(req)
+                return req
+                end
+            EON
+            tarantool /usr/local/bin/tarantool-entrypoint.lua /opt/tarantool/app.lua
+            EOF'
+        environment:
+            - listen=3301

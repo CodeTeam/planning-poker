@@ -1,0 +1,7 @@
+POST http://localhost:22301/api/v1/profiles/ HTTP/1.1
+content-type: application/json
+
+{
+    "username": "login2",
+    "password": "value1-1111"
+}
